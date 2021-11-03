@@ -6,8 +6,8 @@ constructor(x){
     this.body.addImage(this.image)
     this.body.scale=0.5
     this.body.velocityY=10
-    this.body.debug=true
-    this.body.setCollider("rectangle",-10,-80,700,180)
+    //this.body.debug=true
+    this.body.setCollider("rectangle",-60,-80,200,180)
 
 }
 }
