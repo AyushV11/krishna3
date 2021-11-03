@@ -1,8 +1,8 @@
 var newx=700
 var life=3
-var gameState="play2"
+var gameState="play"
 var bg=0
-var newx2=0
+var newx2=600
 function preload(){
   enemy2 = loadImage("enemy1.png")
   enemydead = loadImage("enemy defeated.png")
@@ -12,11 +12,15 @@ function preload(){
 function setup() {
   createCanvas(1200,800);
   edge1= createSprite(3000,20,6000,10)
+ 
+  
   edge2= createSprite(3000,780,6000,10) 
-  edge1.visible=false
-  edge2.visible=false
+  edge1.visibility=false
+  edge2.visibility = false
+ 
  krishna = new Player(200,500)
  rockgroup= new Group()
+  stonegroup = new Group()
  for(var i=0;i<=5;i++){
  rock1 = new Rock(newx)
  rockgroup.add(rock1.body)
@@ -30,7 +34,7 @@ function setup() {
 function draw() {
   background(bg);
  
-  drawSprites();
+  
   textSize(20)
   fill("white")
   text("life's : "+ life,krishna.body.x,50)
@@ -61,24 +65,22 @@ if(gameState==="play"){
     krishna.body.y-=10
   }
   if(krishna.body.x>5000){
-    // stone = new Stone(krishna.body.x,krishna.body.y)
+   
      enemy.body.addImage(enemy2)
      enemy.body.setCollider("rectangle",50,-80,50,50)
      enemy.body.scale=2
      text("press space to throw the stone",krishna.body.x,200)
      if(keyWentDown("space")){
        stone = new Stone(krishna.body.x,krishna.body.y)
+       stonegroup.add(stone.body)
+
      }
  
      if(frameCount%50===0){
        enemy.body.y=random(100,700)
      }
 
-     if(stone.body.isTouching(enemy.body)){
-    
-     
-      gameState="play2"
-    }
+     stonegroup.collide(enemy.body,levelchange)
   }
  
 }
@@ -96,28 +98,40 @@ if(gameState==="play"){
         //bg.addImage()
         krishna.body.x = 50
         krishna.body.y = 50
+        rock1 = new Rock(100)
+        rock1.body.addImage(log)
+        rock1.body.setCollider("rectangle", -10, -80, 500, 180)
+        rock1.body.y=400
+        rock1.body.velocityY=0
+        rockgroup.add(rock1.body)
         for(var i=0;i<=10;i++){
           rock1 = new Rock(newx2)
+          rock1.body.velocityY=5
           rock1.body.addImage(log)
+          rock1.body.setCollider("rectangle", -10, -80, 500, 180)
           rockgroup.add(rock1.body)
          
-          newx2+=800
+          newx2+=300
           }
+        enemy = new Enemy(newx2, 500)
       }
     }
 
 if(gameState==="play3"){
   krishna.body.collide(edge1)
-  krishna.body.velocityY=5
+  krishna.body.velocityY=15
   krishna.body.collide(rockgroup)
+  krishna.body.velocityX=0
  if(keyDown(UP_ARROW)){
-   krishna.body.setVelocity(10,-20)
+   krishna.body.setVelocity(5,-30)
  } 
-if(krishna.body.isTouching(edge1)){
-  life--
-  krishna.body.x=100
-  krishna.body.y=50
-}
+krishna.body.collide(edge1,comeback)
+  krishna.body.collide(edge2, comeback)
+  if (krishna.body.isTouching(enemy.body)) {
+
+gameState='gameOver'
+  }
+
 }
 
 
@@ -135,7 +149,18 @@ if(krishna.body.isTouching(edge1)){
     text("GAME OVER",krishna.body.x,200)
   }
 
+  if(gameState=='gameOver'){
+    camera.position.x=newx2
+    krishna.body.velocityX = 5
+    krishna.body.velocityY = 0
+    enemy.body.velocityX = 5
+
+    textSize(30)
+    text('GAME OVER ...... you won the game'  , newx2, height / 2)
+  }
+
   krishna.body.collide(rockgroup,comeback)
+  drawSprites();
 }
 
 function comeback(krish,rock){
@@ -145,4 +170,7 @@ function comeback(krish,rock){
   krish.velocityY=0
   life--
 
+}
+function levelchange(){
+  gameState = "play2"
 }
